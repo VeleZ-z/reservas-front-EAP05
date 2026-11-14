@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom properties for the color palette */
+:root {
+  --color-light-turquoise: #DDF3F0;
+  --color-olive-dark: #60714E;
+  --color-sage-green: #89A666;
+  --color-moss-green: #838E73;
+  --color-bronze: #72583D;
+}
+
+/* Base styles using the palette */
+body {
+  background-color: var(--color-light-turquoise);
+  color: var(--color-olive-dark);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Link styles */
+a {
+  color: var(--color-sage-green);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--color-bronze);
+}
+
+/* Button styles using palette */
+.btn {
+  @apply inline-block px-4 py-2 rounded-md font-medium transition-colors;
+}
+
+.btn-primary {
+  @apply bg-[var(--color-sage-green)] text-white hover:bg-[var(--color-bronze)];
+}
+
+.btn-secondary {
+  @apply bg-[var(--color-olive-dark)] text-white hover:bg-dark;
+}
+
+.btn-ghost {
+  @apply bg-transparent text-[var(--color-olive-dark)] hover:bg-[var(--color-light-turquoise)];
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-lg shadow-sm p-6;
+}
+
+/* Input styles */
+.input {
+  @apply w-full px-3 py-2 rounded-border bg-white border border-[var(--color-olive-dark)] focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-green)] focus:border-transparent;
+}
