@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Reserva } from "@/src/api/reservas";
 import { ReservaForm } from "@/components/ReservaForm";
 import { listarReservas, cancelarReserva, crearReserva } from "@/src/api/reservas";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function ReservasPage() {
@@ -42,65 +42,55 @@ export default function ReservasPage() {
         </h1>
 
         {/* Formulario de creación */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Crear Nueva Reserva</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ReservaForm onReservaCreated={handleSubmit} />
-          </CardContent>
+        <Card header="Crear Nueva Reserva">
+          <ReservaForm onReservaCreated={handleSubmit} />
         </Card>
 
         {/* Lista de reservas */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Reservas Registradas</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-lg shadow-sm">
-                <thead className="border-b border-b-[var(--color-olive-dark)]">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Servicio</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Recurso</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Fecha</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Hora</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Estado</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Acciones</th>
+        <Card header="Reservas Registradas" className="mt-8">
+          <div className="px-6 py-5">
+            <table className="min-w-full bg-white rounded-lg shadow-sm">
+              <thead className="border-b border-b-[var(--color-olive-dark)]">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Servicio</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Recurso</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Fecha</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Hora</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Estado</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reservas.map((reserva) => (
+                  <tr key={reserva.id} className="border-b border-b-[var(--color-olive-light)]">
+                    <td className="px-6 py-4 font-medium text-[var(--color-olive-dark)]">{reserva.servicioId}</td>
+                    <td className="px-6 py-4 text-small text-[var(--color-olive-dark)]">{reserva.recursoId}</td>
+                    <td className="px-6 py-4 text-small text-[var(--color-olive-dark)]">{reserva.fecha}</td>
+                    <td className="px-6 py-4 text-small text-[var(--color-olive-dark)]">{reserva.hora}</td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={
+                          reserva.estado === "pendiente"
+                            ? "bg-[var(--color-sage-green)] text-white rounded px-2 py-1 text-xs"
+                            : reserva.estado === "confirmada"
+                            ? "bg-[var(--color-olive-dark)] text-white rounded px-2 py-1 text-xs"
+                            : "bg-[var(--color-bronze)] text-white rounded px-2 py-1 text-xs"
+                        }
+                      >
+                        {reserva.estado}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Button variant="ghost" size="sm">Ver</Button>
+                      <Button variant="ghost" size="sm" style={{ color: "#dc2626" }}>
+                        Cancelar
+                      </Button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {reservas.map((reserva) => (
-                    <tr key={reserva.id} className="border-b border-b-[var(--color-olive-light)]">
-                      <td className="px-6 py-4 font-medium text-[var(--color-olive-dark)]">{reserva.servicioId}</td>
-                      <td className="px-6 py-4 text-small text-[var(--color-olive-dark)]">{reserva.recursoId}</td>
-                      <td className="px-6 py-4 text-small text-[var(--color-olive-dark)]">{reserva.fecha}</td>
-                      <td className="px-6 py-4 text-small text-[var(--color-olive-dark)]">{reserva.hora}</td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={
-                            reserva.estado === "pendiente"
-                              ? "bg-[var(--color-sage-green)] text-white rounded px-2 py-1 text-xs"
-                              : reserva.estado === "confirmada"
-                              ? "bg-[var(--color-olive-dark)] text-white rounded px-2 py-1 text-xs"
-                              : "bg-[var(--color-bronze)] text-white rounded px-2 py-1 text-xs"
-                          }
-                        >
-                          {reserva.estado}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Button variant="ghost" size="sm">Ver</Button>
-                        <Button variant="ghost" size="sm" style={{ color: "#dc2626" }}>
-                          Cancelar
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Card>
       </div>
     </section>

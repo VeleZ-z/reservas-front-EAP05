@@ -9,32 +9,15 @@ export interface SelectProps {
 
 export function Select({ onValueChange, defaultValue, options, className }: SelectProps) {
   return (
-    <div 
-      className={cn(
-        "relative",
-        "w-full",
-        className
-      )}
-    >
+    <div className={cn(
+      "relative w-full",
+      className
+    )}>
       <select
         onChange={(e) => onValueChange?.(e.target.value)}
         value={defaultValue}
         className={cn(
-          "appearance-none",
-          "w-full",
-          "px-3",
-          "py-2",
-          "rounded-md",
-          "border",
-          "border-[var(--color-olive-dark)]",
-          "bg-white",
-          "text-[var(--color-olive-dark)]",
-          "focus:outline-none",
-          "focus:ring-2",
-          "focus:ring-[var(--color-sage-green)]",
-          "focus:border-transparent",
-          "disabled:opacity-50",
-          "disabled:cursor-not-allowed",
+          "appearance-none rounded-md border border-[var(--color-olive-dark)] bg-[var(--color-white)] text-[var(--color-olive-dark)] py-2.5 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-[var(--color-sage-green)] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed block w-full",
           className
         )}
       >

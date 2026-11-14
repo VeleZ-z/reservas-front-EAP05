@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Horario {
   id: string;
@@ -12,7 +11,6 @@ interface Horario {
   horaInicio: string;
   horaFin: string;
   disponible: boolean;
-  servicioId?: string;
 }
 
 export default function AgendaPage() {
@@ -30,12 +28,6 @@ export default function AgendaPage() {
     setFecha(e.target.value);
   };
 
-  const handleCambiarDisponibilidad = (id: string) => {
-    setHorarios(horarios.map((h) => 
-      h.id === id ? { ...h, disponible: !h.disponible } : h
-    ));
-  };
-
   return (
     <section className="pt-24">
       <div className="max-w-7xl mx-auto">
@@ -43,9 +35,8 @@ export default function AgendaPage() {
           Gestión de Horarios y Agenda
         </h1>
 
-        {/* Filtro por fecha */}
-        <Card className="mb-8">
-          <CardContent className="grid grid-cols-2 gap-4">
+        <div className="mb-8 rounded-lg border border-[var(--color-olive-dark)] overflow-hidden">
+          <div className="grid grid-cols-2 gap-4 p-4 border-b border-b-[var(--color-olive-dark)]">
             <div>
               <label className="block text-sm font-medium text-[var(--color-olive-dark)] mb-1">
                 Fecha
@@ -71,57 +62,49 @@ export default function AgendaPage() {
                 ]}
               />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Lista de horarios */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Horarios del {new Date(fecha).toLocaleDateString('es-ES')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-lg shadow-sm">
-                <thead className="border-b border-b-[var(--color-olive-dark)]">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Hora</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Disponible</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Acciones</th>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white rounded-lg shadow-sm">
+            <thead className="border-b border-b-[var(--color-olive-dark)]">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Hora</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Disponible</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {horarios
+                .filter((h) => h.fecha === fecha)
+                .map((h) => (
+                  <tr key={h.id} className="border-b border-b-[var(--color-olive-light)]">
+                    <td className="px-6 py-4 font-medium text-[var(--color-olive-dark)]">
+                      {h.horaInicio} - {h.horaFin}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span 
+                        className={h.disponible 
+                          ? "bg-[var(--color-sage-green)] text-white rounded px-2 py-1 text-xs"
+                          : "bg-[var(--color-bronze)] text-white rounded px-2 py-1 text-xs"}
+                      >
+                        {h.disponible ? "Disponible" : "Reservado"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Button 
+                        variant={h.disponible ? "ghost" : "secondary"} 
+                        size="sm"
+                        onClick={() => console.log('Cambiar disponibilidad', h.id)}
+                      >
+                        {h.disponible ? "Reservar" : "Cancelar"}
+                      </Button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {horarios
-                    .filter((h) => h.fecha === fecha)
-                    .map((h) => (
-                      <tr key={h.id} className="border-b border-b-[var(--color-olive-light)]">
-                        <td className="px-6 py-4 font-medium text-[var(--color-olive-dark)]">
-                          {h.horaInicio} - {h.horaFin}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span 
-                            className={h.disponible 
-                              ? "bg-[var(--color-sage-green)] text-white rounded px-2 py-1 text-xs"
-                              : "bg-[var(--color-bronze)] text-white rounded px-2 py-1 text-xs"}
-                          >
-                            {h.disponible ? "Disponible" : "Reservado"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <Button 
-                            variant={h.disponible ? "ghost" : "secondary"} 
-                            size="sm"
-                            onClick={() => handleCambiarDisponibilidad(h.id)}
-                          >
-                            {h.disponible ? "Reservar" : "Cancelar"}
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );

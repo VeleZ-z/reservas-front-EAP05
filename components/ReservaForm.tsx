@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
 interface ReservaFormProps {
   onReservaCreated: (reserva: {
@@ -25,19 +25,17 @@ export function ReservaForm({ onReservaCreated }: ReservaFormProps) {
     usuario: "",
   });
 
-  const [servicios, setServicios] = useState<Array<{ value: string; label: string }>>([
+  const [servicios] = useState([
     { value: "servicio-1", label: "Cortes de cabello" },
     { value: "servicio-2", label: "Manicura" },
     { value: "servicio-3", label: "Masaje" },
   ]);
-
-  const [recursos, setRecursos] = useState<Array<{ value: string; label: string }>>([
+  const [recursos] = useState([
     { value: "recurso-1", label: "Silla de estilista" },
     { value: "recurso-2", label: "Mesa de manicura" },
     { value: "recurso-3", label: "Camilla de masaje" },
   ]);
-
-  const [usuarios, setUsuarios] = useState<Array<{ value: string; label: string }>>([
+  const [usuarios] = useState([
     { value: "usuario-1", label: "María G." },
     { value: "usuario-2", label: "José L." },
     { value: "usuario-3", label: "Ana M." },
@@ -68,14 +66,14 @@ export function ReservaForm({ onReservaCreated }: ReservaFormProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Crear Nueva Reserva</CardTitle>
-      </CardHeader>
-      <CardContent>
+      <div className="px-6 py-4 border-b border-b-[var(--color-olive-dark)]">
+        <h3 className="text-xl font-medium text-[var(--color-olive-dark)]">Crear Nueva Reserva</h3>
+      </div>
+      <div className="px-6 py-5">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-olive-dark mb-1">
+              <label className="block text-sm font-medium text-[var(--color-olive-dark)] mb-1">
                 Servicio
               </label>
               <Select
@@ -86,7 +84,7 @@ export function ReservaForm({ onReservaCreated }: ReservaFormProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-olive-dark mb-1">
+              <label className="block text-sm font-medium text-[var(--color-olive-dark)] mb-1">
                 Recurso
               </label>
               <Select
@@ -98,7 +96,7 @@ export function ReservaForm({ onReservaCreated }: ReservaFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-olive-dark mb-1">
+            <label className="block text-sm font-medium text-[var(--color-olive-dark)] mb-1">
               Usuario
             </label>
             <Select
@@ -109,7 +107,7 @@ export function ReservaForm({ onReservaCreated }: ReservaFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-olive-dark mb-1">
+            <label className="block text-sm font-medium text-[var(--color-olive-dark)] mb-1">
               Fecha
             </label>
             <Input
@@ -122,7 +120,7 @@ export function ReservaForm({ onReservaCreated }: ReservaFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-olive-dark mb-1">
+            <label className="block text-sm font-medium text-[var(--color-olive-dark)] mb-1">
               Hora
             </label>
             <Input
@@ -141,7 +139,7 @@ export function ReservaForm({ onReservaCreated }: ReservaFormProps) {
             </Button>
           </div>
         </form>
-      </CardContent>
+      </div>
     </Card>
   );
 }

@@ -16,20 +16,7 @@ export function Input({ type = "text", placeholder, className, value, onChange, 
       type={type}
       placeholder={placeholder}
       className={cn(
-        "input",
-        "appearance-none",
-        "rounded-md",
-        "border",
-        "border-[var(--color-olive-dark)]",
-        "bg-white",
-        "text-[var(--color-olive-dark)]",
-        "placeholder-text-[var(--color-olive-dark)]",
-        "focus:outline-none",
-        "focus:ring-2",
-        "focus:ring-[var(--color-sage-green)]",
-        "focus:border-transparent",
-        "disabled:opacity-50",
-        "disabled:cursor-not-allowed",
+        "appearance-none rounded-md border border-[var(--color-olive-dark)] bg-[var(--color-white)] text-[var(--color-olive-dark)] placeholder-text-[var(--color-olive-dark)] transition-colors outline-none focus:border-[var(--color-sage-green)] focus:ring-2 focus:ring-[var(--color-sage-green)] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed block w-full py-2.5 px-3",
         className
       )}
       value={value}
