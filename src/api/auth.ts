@@ -1,77 +1,97 @@
-import { API_BASE_URL, headers } from "./config";
+import { apiFetch, setToken, clearToken, getToken } from "./config";
 
-interface Credenciales {
+export type Rol = "cliente" | "proveedor" | "administrador" | "CLIENTE" | "PROVEEDOR" | "ADMIN";
+
+export interface Usuario {
+  id?: string;
+  nombre: string;
   email: string;
-  password: string;
+  telefono?: string;
+  direccion?: string;
 }
 
-interface Usuario {
+export interface LoginResponse {
+  token: string;
+  mensaje: string;
+  usuario: string;
+  rol: Rol;
+}
+
+export interface UsuarioRegistroResponse {
   id: string;
   nombre: string;
   email: string;
-  rol: string;
+  mensaje?: string;
 }
 
-interface AuthResponse {
-  user: Usuario;
-  token: string;
-}
-
-export async function login(credenciales: Credenciales): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+/** POST /api/auth/login -> { token, mensaje, usuario, rol } */
+export async function login(credenciales: {
+  email: string;
+  contrasena: string;
+}): Promise<LoginResponse> {
+  const data = await apiFetch<LoginResponse>("/api/auth/login", {
     method: "POST",
-    headers,
     body: JSON.stringify(credenciales),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.mensaje || "Error en la autenticación");
-  }
-
-  return response.json();
+  if (data.token) setToken(data.token);
+  return data;
 }
 
-export async function registrar(usuarioData: {
+/** POST /api/usuario/registrar */
+export async function registrarCliente(payload: {
   nombre: string;
+  contrasena: string;
   email: string;
-  password: string;
-  rol: string;
-}): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/auth/registrar`, {
+  telefono: string;
+  direccion: string;
+}): Promise<UsuarioRegistroResponse> {
+  return apiFetch<UsuarioRegistroResponse>("/api/usuario/registrar", {
     method: "POST",
-    headers,
-    body: JSON.stringify(usuarioData),
+    body: JSON.stringify(payload),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.mensaje || "Error en el registro");
-  }
-
-  return response.json();
 }
 
-export async function obtenerPerfil(): Promise<Usuario> {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("No hay token de sesión");
-
-  const response = await fetch(`${API_BASE_URL}/api/auth/perfil`, {
-    method: "GET",
-    headers: {
-      ...headers,
-      Authorization: `Bearer ${token}`,
-    },
+/** POST /api/usuario/registrar/proveedor */
+export async function registrarProveedor(payload: {
+  nombre: string;
+  contrasena: string;
+  email: string;
+  telefono: string;
+  direccion: string;
+}): Promise<UsuarioRegistroResponse> {
+  return apiFetch<UsuarioRegistroResponse>("/api/usuario/registrar/proveedor", {
+    method: "POST",
+    body: JSON.stringify(payload),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.mensaje || "Error al obtener perfil");
-  }
-
-  return response.json();
 }
 
-export function logout(): void {
-  localStorage.removeItem("token");
+/** POST /api/auth/logout (requiere Authorization) */
+export async function logout(): Promise<void> {
+  try {
+    await apiFetch("/api/auth/logout", {
+      method: "POST",
+      token: getToken(),
+    });
+  } finally {
+    clearToken();
+  }
+}
+
+/** POST /api/auth/forgot-password */
+export async function forgotPassword(email: string): Promise<{ mensaje: string }> {
+  return apiFetch<{ mensaje: string }>("/api/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+/** POST /api/auth/reset-password */
+export async function resetPassword(payload: {
+  token: string;
+  contrasena: string;
+}): Promise<{ mensaje: string }> {
+  return apiFetch<{ mensaje: string }>("/api/auth/reset-password", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 }

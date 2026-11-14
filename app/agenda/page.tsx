@@ -1,111 +1,175 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { PageHeader } from "@/components/page-header";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { Alert } from "@/components/ui/alert";
+import { SkeletonTable, EmptyState } from "@/components/ui/feedback";
+import { consultarAgenda, type AgendaItem } from "@/src/api/agenda";
+import { getToken } from "@/src/api/config";
 
-interface Horario {
-  id: string;
-  fecha: string;
-  horaInicio: string;
-  horaFin: string;
-  disponible: boolean;
-}
+type Filtro = "todas" | "CONFIRMADA" | "PENDIENTE" | "CANCELADA";
 
 export default function AgendaPage() {
-  const [horarios, setHorarios] = useState<Horario[]>([
-    { id: "1", fecha: "2024-01-15", horaInicio: "09:00", horaFin: "10:00", disponible: true },
-    { id: "2", fecha: "2024-01-15", horaInicio: "10:00", horaFin: "11:00", disponible: true },
-    { id: "3", fecha: "2024-01-15", horaInicio: "11:00", horaFin: "12:00", disponible: false },
-    { id: "4", fecha: "2024-01-16", horaInicio: "09:00", horaFin: "10:00", disponible: true },
-    { id: "5", fecha: "2024-01-16", horaInicio: "14:00", horaFin: "15:00", disponible: true },
-  ]);
+  const [items, setItems] = useState<AgendaItem[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [filtro, setFiltro] = useState<Filtro>("todas");
+  const [busqueda, setBusqueda] = useState("");
 
-  const [fecha, setFecha] = useState("2024-01-15");
+  useEffect(() => {
+    if (!getToken()) {
+      setItems([]);
+      return;
+    }
+    consultarAgenda()
+      .then(setItems)
+      .catch((e) => {
+        setError(e instanceof Error ? e.message : "No se pudo cargar la agenda");
+        setItems([]);
+      });
+  }, []);
 
-  const handleChangeFecha = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFecha(e.target.value);
-  };
+  const filtrados = useMemo(() => {
+    if (!items) return [];
+    const q = busqueda.trim().toLowerCase();
+    return items.filter((i) => {
+      const coincideEstado = filtro === "todas" || i.estado === filtro;
+      const coincideTexto =
+        !q ||
+        i.id.toLowerCase().includes(q) ||
+        (i.servicioId ?? "").toLowerCase().includes(q) ||
+        (i.clienteId ?? "").toLowerCase().includes(q);
+      return coincideEstado && coincideTexto;
+    });
+  }, [items, filtro, busqueda]);
+
+  const badgeVariant = (estado: string) =>
+    estado === "CONFIRMADA" ? "success" : estado === "CANCELADA" ? "danger" : "warning";
 
   return (
-    <section className="pt-24">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-[var(--color-olive-dark)] mb-6">
-          Gestión de Horarios y Agenda
-        </h1>
+    <>
+      <PageHeader
+        eyebrow="Operación"
+        title="Agenda de reservas"
+        description="Consulta el histórico completo de reservas, filtra por estado y busca por identificador."
+        actions={
+          <Link href="/reservas">
+            <Button variant="primary">Nueva reserva</Button>
+          </Link>
+        }
+      />
 
-        <div className="mb-8 rounded-lg border border-[var(--color-olive-dark)] overflow-hidden">
-          <div className="grid grid-cols-2 gap-4 p-4 border-b border-b-[var(--color-olive-dark)]">
-            <div>
-              <label className="block text-sm font-medium text-[var(--color-olive-dark)] mb-1">
-                Fecha
-              </label>
-              <Input
-                type="date"
-                value={fecha}
-                onChange={handleChangeFecha}
-                className="w-full"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-[var(--color-olive-dark)] mb-1">
-                Mostrar
-              </label>
-              <Select
-                defaultValue="todos"
-                options={[
-                  { value: "todos", label: "Todos" },
-                  { value: "disponibles", label: "Disponibles" },
-                  { value: "ocupados", label: "Ocupados" },
-                ]}
-              />
-            </div>
+      {error ? (
+        <Alert variant="danger" title="Error al cargar" className="mb-6">
+          {error}
+        </Alert>
+      ) : null}
+
+      {/* Filtros */}
+      <Card className="mb-6">
+        <CardContent className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-[1fr_auto] sm:items-end">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="q">Buscar</Label>
+            <Input
+              id="q"
+              placeholder="ID de reserva, servicio o cliente…"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-2 sm:w-56">
+            <Label htmlFor="filtro">Estado</Label>
+            <Select
+              id="filtro"
+              value={filtro}
+              onValueChange={(v) => setFiltro(v as Filtro)}
+              options={[
+                { value: "todas", label: "Todas las reservas" },
+                { value: "CONFIRMADA", label: "Confirmadas" },
+                { value: "PENDIENTE", label: "Pendientes" },
+                { value: "CANCELADA", label: "Canceladas" },
+              ]}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tabla */}
+      <Card>
+        <div className="flex items-center justify-between border-b border-line p-6 pb-4">
+          <div>
+            <h2 className="text-title-md text-ink">
+              {items ? `${filtrados.length} reserva${filtrados.length === 1 ? "" : "s"}` : "Cargando…"}
+            </h2>
+            <p className="text-body-sm text-ink-muted">Ordenadas por fecha de creación</p>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-lg shadow-sm">
-            <thead className="border-b border-b-[var(--color-olive-dark)]">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Hora</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Disponible</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-olive-dark)]">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {horarios
-                .filter((h) => h.fecha === fecha)
-                .map((h) => (
-                  <tr key={h.id} className="border-b border-b-[var(--color-olive-light)]">
-                    <td className="px-6 py-4 font-medium text-[var(--color-olive-dark)]">
-                      {h.horaInicio} - {h.horaFin}
+        {items === null ? (
+          <SkeletonTable rows={6} cols={5} />
+        ) : filtrados.length === 0 ? (
+          <EmptyState
+            icon={
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="size-6">
+                <rect width="18" height="18" x="3" y="4" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
+              </svg>
+            }
+            title={items.length === 0 ? "Sin reservas registradas" : "Sin resultados"}
+            description={
+              items.length === 0
+                ? "Cuando se creen reservas aparecerán aquí automáticamente."
+                : "Prueba con otro término de búsqueda o cambia el filtro de estado."
+            }
+            action={
+              items.length === 0 ? (
+                <Link href="/reservas">
+                  <Button variant="primary">Crear reserva</Button>
+                </Link>
+              ) : null
+            }
+          />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Servicio</th>
+                  <th scope="col">Cliente</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Creada</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtrados.map((r) => (
+                  <tr key={r.id}>
+                    <td className="font-mono text-caption text-ink">{r.id.slice(0, 8)}</td>
+                    <td className="font-mono text-caption">{r.servicioId?.slice(0, 8)}</td>
+                    <td className="font-mono text-caption">{r.clienteId?.slice(0, 8)}</td>
+                    <td>
+                      <Badge variant={badgeVariant(r.estado)} dot>
+                        {r.estado}
+                      </Badge>
                     </td>
-                    <td className="px-6 py-4">
-                      <span 
-                        className={h.disponible 
-                          ? "bg-[var(--color-sage-green)] text-white rounded px-2 py-1 text-xs"
-                          : "bg-[var(--color-bronze)] text-white rounded px-2 py-1 text-xs"}
-                      >
-                        {h.disponible ? "Disponible" : "Reservado"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Button 
-                        variant={h.disponible ? "ghost" : "secondary"} 
-                        size="sm"
-                        onClick={() => console.log('Cambiar disponibilidad', h.id)}
-                      >
-                        {h.disponible ? "Reservar" : "Cancelar"}
-                      </Button>
+                    <td className="text-caption">
+                      {new Date(r.creadaEn).toLocaleString("es-CO", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
                     </td>
                   </tr>
                 ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+    </>
   );
 }

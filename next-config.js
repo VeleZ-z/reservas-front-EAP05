@@ -1,17 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  // Modo estándar para Vercel (sin output: "export")
-  // Esto permite que Tailwind y React funcionen plenamente
   trailingSlash: true,
-  // Configuración webpack simple si es necesario
-  webpack: (config, { dev, isServer }) => {
-    return config;
-  },
-  // Optimizaciones para producción
-  compiler: {
-    react18: true,
+  poweredByHeader: false,
+  // Cabeceras de seguridad y cache
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
+    ];
   },
 };
 

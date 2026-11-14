@@ -1,74 +1,30 @@
-import { API_BASE_URL, headers } from "./config";
+import { apiFetch, getToken } from "./config";
 
-export interface Reserva {
+export interface CrearReservaResponse {
   id: string;
-  servicioId: string;
-  recursoId: string;
-  usuarioId: string;
-  fecha: string;
-  hora: string;
-  estado: "pendiente" | "confirmada" | "cancelada";
-  createdAt: string;
+  estado?: string;
+  mensaje?: string;
+  reservaId?: string;
+  horarioId?: string;
+  servicioId?: string;
 }
 
-export async function listarReservas(): Promise<Reserva[]> {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("No hay token de sesión");
-
-  const response = await fetch(`${API_BASE_URL}/api/reservas`, {
-    method: "GET",
-    headers: {
-      ...headers,
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.mensaje || "Error al listar reservas");
-  }
-
-  return response.json();
-}
-
-export async function crearReserva(reserva: {
+/** POST /api/reservas/reservar — body: { servicioId, horarioId } */
+export async function crearReserva(payload: {
   servicioId: string;
-  recursoId: string;
-  fecha: string;
-  hora: string;
-  usuario: string;
-}): Promise<Reserva> {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("No hay token de sesión");
-
-  const response = await fetch(`${API_BASE_URL}/api/reservas`, {
+  horarioId: string;
+}): Promise<CrearReservaResponse> {
+  return apiFetch<CrearReservaResponse>("/api/reservas/reservar", {
     method: "POST",
-    headers: {
-      ...headers,
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(reserva),
+    token: getToken(),
+    body: JSON.stringify(payload),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.mensaje || "Error al crear reserva");
-  }
-
-  return response.json();
 }
 
-export async function cancelarReserva(id: string): Promise<void> {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("No hay token de sesión");
-
-  const response = await fetch(`${API_BASE_URL}/api/reservas/${id}`, {
-    method: "DELETE",
-    headers: {
-      ...headers,
-      Authorization: `Bearer ${token}`,
-    },
+/** POST /api/reservas/{id}/cancelar */
+export async function cancelarReserva(id: string): Promise<{ mensaje?: string }> {
+  return apiFetch<{ mensaje?: string }>(`/api/reservas/${id}/cancelar`, {
+    method: "POST",
+    token: getToken(),
   });
-
-  if (!response.ok) throw new Error("Error al cancelar reserva");
 }

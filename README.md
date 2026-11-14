@@ -89,11 +89,4 @@ reservas-front-EAP05/
 
 ---
 
-## Equipo de Desarrollo (EAP05)
 
-- Karen Cardona Gutiérrez
-- Lizbeth Marcela Espinosa Mendoza
-- Juan José Garzón Mejía
-- Guillermo Mejía Uribe
-- Juan Ignacio Parra Hoyos
-- Juan Camilo Vélez Chaverra
