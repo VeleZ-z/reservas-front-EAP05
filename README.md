@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Plataforma de Reservas de Servicios — Frontend (UI)
 
-## Getting Started
+Interfaz web para la Plataforma de Reservas de Servicios, Espacios e Insumos (Caso 14). Desarrollada en el marco de la Fábrica Escuela CodeF@ctory UdeA (Semestre 2026-2, Equipo EAP05).
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Tecnologías
+
+- Framework: Next.js (App Router)
+- Lenguaje: TypeScript
+- Estilos: Tailwind CSS
+- Calidad de código: ESLint
+- Despliegue: Vercel
+
+---
+
+## Estructura del Proyecto
+
+```text
+reservas-front-EAP05/
+├── app/                  # Rutas y páginas de la aplicación
+├── components/           # Componentes UI reutilizables
+├── lib/                  # Utilidades globales
+├── public/               # Archivos estáticos
+├── src/api/              # Integración REST con el Backend Spring Boot
+├── eslint.config.mjs     # Configuración de linter
+├── next-config.js        # Configuración de Next.js
+├── package.json          # Dependencias y scripts
+├── tailwind.config.ts    # Configuración de Tailwind CSS
+├── tsconfig.json         # Configuración de TypeScript
+└── vercel.json           # Configuración de despliegue en Vercel
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Funcionalidades Principales
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Autenticación y Registro: Control de acceso por roles (Cliente, Proveedor, Administrador).
+2. Servicios y Recursos: Creación y parametrización de servicios asociados a recursos e insumos.
+3. Disponibilidad: Gestión de franjas horarias y bloqueos administrativos.
+4. Reservas: Consulta e interacción en tiempo real con validación de disponibilidad y regla de cancelación con 12 horas de antelación.
+5. Reportes: Historiales de uso y métricas de ocupación.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Configuración Local
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Prerrequisitos
+- Node.js 18+
+- npm, yarn, pnpm o bun
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Pasos
 
-## Deploy on Vercel
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/VeleZ-z/reservas-front-EAP05
+   cd reservas-front-EAP05
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Instalar dependencias:
+   ```bash
+   npm install
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Variables de entorno (`.env.local`):
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:8080/api
+   ```
+
+4. Ejecutar servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## Scripts
+
+- `npm run dev`: Servidor de desarrollo.
+- `npm run build`: Compilación para producción.
+- `npm run start`: Inicia el servidor compilado.
+- `npm run lint`: Análisis estático con ESLint.
+
+---
+
+## Repositorio Relacionado
+
+- Backend REST API (Spring Boot): [Camila-cabarcas/Fabrica-2026-2-EAP05](https://github.com/Camila-cabarcas/Fabrica-2026-2-EAP05)
+
+---
+
+## Equipo de Desarrollo (EAP05)
+
+- Karen Cardona Gutiérrez
+- Lizbeth Marcela Espinosa Mendoza
+- Juan José Garzón Mejía
+- Guillermo Mejía Uribe
+- Juan Ignacio Parra Hoyos
+- Juan Camilo Vélez Chaverra
