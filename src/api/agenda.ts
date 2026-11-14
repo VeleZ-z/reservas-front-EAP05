@@ -9,15 +9,16 @@ export interface AgendaItem {
   creadaEn: string;
 }
 
-/** GET /api/agenda — agenda del proveedor autenticado (rol PROVEEDOR) */
+/**
+ * GET /api/agenda — agenda del proveedor autenticado (rol PROVEEDOR).
+ * El backend devuelve un array; si está vacío devuelve
+ * `{ nota: "No existe endpoint de reservas programadas en la version actual de la rama de calidad." }`.
+ */
 export async function consultarAgenda(): Promise<AgendaItem[]> {
-  const data = await apiFetch<AgendaItem[] | { contenido?: AgendaItem[] }>(
-    "/api/agenda",
-    { method: "GET", token: getToken() }
-  );
+  const data = await apiFetch<AgendaItem[] | { mensaje?: string }>("/api/agenda", {
+    method: "GET",
+    token: getToken(),
+  });
   if (Array.isArray(data)) return data;
-  if (data && typeof data === "object" && "contenido" in data && Array.isArray(data.contenido)) {
-    return data.contenido;
-  }
   return [];
 }

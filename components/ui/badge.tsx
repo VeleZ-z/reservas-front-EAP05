@@ -6,7 +6,8 @@ export type BadgeVariant =
   | "success"
   | "warning"
   | "danger"
-  | "info";
+  | "info"
+  | "inverse";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
@@ -22,6 +23,7 @@ export function Badge({ className, variant = "neutral", dot, children, ...props 
     warning: "bg-warning-soft text-warning-text border-bronze-200",
     danger: "bg-error-soft text-error-text border-red-200",
     info: "bg-info-soft text-info-text border-turquoise-200",
+    inverse: "border-white/25 bg-white/15 text-white backdrop-blur",
   };
 
   const dots: Record<BadgeVariant, string> = {
@@ -31,6 +33,7 @@ export function Badge({ className, variant = "neutral", dot, children, ...props 
     warning: "bg-warning",
     danger: "bg-error",
     info: "bg-info",
+    inverse: "bg-white",
   };
 
   return (

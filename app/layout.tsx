@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AppShell } from "@/components/app-shell";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,7 +10,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Sistema de Reservas · EAP05",
+    default: "Reserva.io ",
     template: "%s · Sistema de Reservas",
   },
   description:
@@ -21,9 +20,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={inter.variable}>
-      <body className="bg-canvas text-ink antialiased">
-        <AppShell>{children}</AppShell>
-      </body>
+      <body className="bg-canvas text-ink antialiased">{children}</body>
     </html>
   );
 }

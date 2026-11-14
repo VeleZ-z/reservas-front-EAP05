@@ -1,6 +1,7 @@
-import { apiFetch, setToken, clearToken, getToken } from "./config";
+import { apiFetch, getToken, clearToken } from "./config";
+import { setSesion, normalizarRol, type Rol } from "./sesion";
 
-export type Rol = "cliente" | "proveedor" | "administrador" | "CLIENTE" | "PROVEEDOR" | "ADMIN";
+export type { Rol };
 
 export interface Usuario {
   id?: string;
@@ -10,18 +11,23 @@ export interface Usuario {
   direccion?: string;
 }
 
+/** Respuesta real de POST /api/auth/login -> { token, mensaje, usuario, rol } */
 export interface LoginResponse {
   token: string;
   mensaje: string;
   usuario: string;
-  rol: Rol;
+  rol: string;
 }
 
 export interface UsuarioRegistroResponse {
   id: string;
   nombre: string;
   email: string;
+  telefono?: string;
+  direccion?: string;
+  rol?: string;
   mensaje?: string;
+  createdAt?: string;
 }
 
 /** POST /api/auth/login -> { token, mensaje, usuario, rol } */
@@ -33,11 +39,17 @@ export async function login(credenciales: {
     method: "POST",
     body: JSON.stringify(credenciales),
   });
-  if (data.token) setToken(data.token);
+  if (data.token) {
+    setSesion({
+      token: data.token,
+      usuario: data.usuario,
+      rol: normalizarRol(data.rol),
+    });
+  }
   return data;
 }
 
-/** POST /api/usuario/registrar */
+/** POST /api/usuario/registrar — body: { nombre, contrasena, email, telefono, direccion } */
 export async function registrarCliente(payload: {
   nombre: string;
   contrasena: string;
@@ -51,7 +63,7 @@ export async function registrarCliente(payload: {
   });
 }
 
-/** POST /api/usuario/registrar/proveedor */
+/** POST /api/usuario/registrar/proveedor — mismo body que el cliente */
 export async function registrarProveedor(payload: {
   nombre: string;
   contrasena: string;
@@ -77,7 +89,7 @@ export async function logout(): Promise<void> {
   }
 }
 
-/** POST /api/auth/forgot-password */
+/** POST /api/auth/forgot-password — body: { email } */
 export async function forgotPassword(email: string): Promise<{ mensaje: string }> {
   return apiFetch<{ mensaje: string }>("/api/auth/forgot-password", {
     method: "POST",
@@ -85,10 +97,15 @@ export async function forgotPassword(email: string): Promise<{ mensaje: string }
   });
 }
 
-/** POST /api/auth/reset-password */
+/**
+ * POST /api/auth/reset-password
+ * Contrato real verificado contra OpenAPI: { email, password, token }
+ * (OJO: el backend usa `password`, no `contrasena`, en este endpoint).
+ */
 export async function resetPassword(payload: {
+  email: string;
+  password: string;
   token: string;
-  contrasena: string;
 }): Promise<{ mensaje: string }> {
   return apiFetch<{ mensaje: string }>("/api/auth/reset-password", {
     method: "POST",

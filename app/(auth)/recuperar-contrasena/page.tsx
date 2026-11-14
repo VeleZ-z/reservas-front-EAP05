@@ -21,30 +21,47 @@ export default function RecuperarContrasenaPage() {
     setLoading(true);
     try {
       const res = await forgotPassword(email);
-      setMsg(res.mensaje ?? "Si el correo existe, te enviaremos las instrucciones.");
+      setMsg(
+        res?.mensaje ??
+          "Si el correo existe, te enviaremos las instrucciones para restablecer tu contraseña."
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo procesar la solicitud");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "No se pudo procesar la solicitud"
+      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md flex-col justify-center py-12">
-      <div className="mb-8 text-center">
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-2 text-center lg:text-left">
         <h1 className="text-heading-md text-ink">Recupera tu acceso</h1>
-        <p className="mt-2 text-body text-ink-muted">
+        <p className="text-body text-ink-muted">
           Te enviaremos un enlace para restablecer tu contraseña.
         </p>
       </div>
 
       <div className="surface-card p-6 sm:p-8">
         <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
-          {error ? <Alert variant="danger">{error}</Alert> : null}
-          {msg ? <Alert variant="success" title="Solicitud recibida">{msg}</Alert> : null}
+          {error ? (
+            <Alert variant="danger" title="No se pudo procesar la solicitud">
+              {error}
+            </Alert>
+          ) : null}
+          {msg ? (
+            <Alert variant="success" title="Solicitud recibida">
+              {msg}
+            </Alert>
+          ) : null}
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="email" required>Correo electrónico</Label>
+            <Label htmlFor="email" required>
+              Correo electrónico
+            </Label>
             <Input
               id="email"
               type="email"
@@ -62,7 +79,7 @@ export default function RecuperarContrasenaPage() {
         </form>
       </div>
 
-      <p className="mt-6 text-center text-body-sm text-ink-muted">
+      <p className="text-center text-body-sm text-ink-muted">
         <Link href="/login" className="font-semibold text-primary hover:text-primary-hover">
           Volver a iniciar sesión
         </Link>

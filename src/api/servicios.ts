@@ -6,12 +6,11 @@ export interface Servicio {
   descripcion?: string;
   duracionMin?: number;
   recursoId?: string;
-  recursoNombre?: string;
   activo?: boolean;
   createdAt?: string;
 }
 
-/** POST /api/servicios/registrar */
+/** POST /api/servicios/registrar — body: { nombre, descripcion?, duracionMin?, recursoId? } */
 export async function registrarServicio(payload: {
   nombre: string;
   descripcion?: string;
@@ -25,7 +24,7 @@ export async function registrarServicio(payload: {
   });
 }
 
-/** PUT /api/servicios/{servicioId} */
+/** PUT /api/servicios/{servicioId} — actualización parcial */
 export async function modificarServicio(
   servicioId: string,
   payload: {
@@ -42,17 +41,17 @@ export async function modificarServicio(
   });
 }
 
-/** POST /api/servicios/validar-recurso */
+/**
+ * POST /api/servicios/validar-recurso
+ * Contrato real verificado contra OpenAPI: body: { recursoId }.
+ * El backend responde 200 con un texto plano ("El recurso es válido...").
+ */
 export async function validarRecurso(payload: {
-  nombre: string;
   recursoId?: string;
-}): Promise<{ valido: boolean; mensaje?: string }> {
-  return apiFetch<{ valido: boolean; mensaje?: string }>(
-    "/api/servicios/validar-recurso",
-    {
-      method: "POST",
-      token: getToken(),
-      body: JSON.stringify(payload),
-    }
-  );
+}): Promise<string> {
+  return apiFetch<string>("/api/servicios/validar-recurso", {
+    method: "POST",
+    token: getToken(),
+    body: JSON.stringify(payload),
+  });
 }

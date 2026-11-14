@@ -1,12 +1,19 @@
 import { apiFetch, getToken } from "./config";
 
+/** Respuesta real de POST /api/reservas/reservar (CrearReservaResponse). */
 export interface CrearReservaResponse {
   id: string;
+  clienteId?: string;
+  servicioId: string;
+  servicioNombre?: string;
+  horarioId: string;
+  horarioInicio?: string;
+  horarioFin?: string;
+  recursoId?: string;
+  recursoNombre?: string;
   estado?: string;
+  creadaEn?: string;
   mensaje?: string;
-  reservaId?: string;
-  horarioId?: string;
-  servicioId?: string;
 }
 
 /** POST /api/reservas/reservar — body: { servicioId, horarioId } */

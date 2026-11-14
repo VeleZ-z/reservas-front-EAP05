@@ -6,7 +6,8 @@ export type ButtonVariant =
   | "outline"
   | "ghost"
   | "destructive"
-  | "accent";
+  | "accent"
+  | "inverse";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -39,6 +40,14 @@ export function Button({
       "text-ink-muted hover:bg-surface-subtle hover:text-ink",
     destructive:
       "bg-error text-white shadow-xs hover:brightness-95 active:brightness-90",
+    /**
+     * Variante exclusiva para fondos oscuros (gradiente de marca).
+     * Se define como variante aparte para que `text-ink-brand` no compita
+     * con `text-ink-inverse` de `primary`: cuando dos utilidades ponen el
+     * mismo color, gana la que aparece después en el CSS generado.
+     */
+    inverse:
+      "bg-white text-ink-brand shadow-sm hover:bg-white/95 active:bg-white",
   };
 
   const sizes: Record<ButtonSize, string> = {
