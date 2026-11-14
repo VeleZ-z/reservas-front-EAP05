@@ -2,13 +2,16 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // Modo export estático - genera archivos HTML y CSS puros
-  output: "export",
-  // Sin base path para Vercel
+  // Modo estándar para Vercel (sin output: "export")
+  // Esto permite que Tailwind y React funcionen plenamente
   trailingSlash: true,
   // Configuración webpack simple si es necesario
   webpack: (config, { dev, isServer }) => {
     return config;
+  },
+  // Optimizaciones para producción
+  compiler: {
+    react18: true,
   },
 };
 
