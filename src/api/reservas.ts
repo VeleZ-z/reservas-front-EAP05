@@ -1,4 +1,4 @@
-import { API_BASE_URL, headers, obtenerPerfil } from "./config";
+import { API_BASE_URL, headers } from "./config";
 
 export interface Reserva {
   id: string;
