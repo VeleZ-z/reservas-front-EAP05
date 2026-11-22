@@ -1,92 +1,133 @@
-# Plataforma de Reservas de Servicios — Frontend (UI)
+# ReservasFrontend - Sistema de Reservas de Servicios
 
-Interfaz web para la Plataforma de Reservas de Servicios, Espacios e Insumos (Caso 14). Desarrollada en el marco de la Fábrica Escuela CodeF@ctory UdeA (Semestre 2026-2, Equipo EAP05).
+## Estado actual (2026-11-21)
 
----
+✅ **Completado**
+- [x] Build limpio con Next.js 14.2.35 + Tailwind v3.4.17 + postcss.config.js
+- [x] 13 rutas estáticas y dinámicas (incluyendo `/eventos`, `/eventos/[id]/capacidad`, `/eventos/[id]/reservas`, `/servicios/uso`, `/historial`)
+- [x] Sistema de tokens de 3 tiers (global → alias semántico → componente) en `app/globals.css` + `tailwind.config.ts`
+- [x] Componentes UI reutilizables en `components/ui/` (Card, Button, Input, Select, Badge, Alert, Feedback)
+- [x] `app-shell.tsx` con sidebar desktop + topbar móvil, navegación por rol, perfil, cierre de sesión y footer
+- [x] API client contra contrato real de Render (`src/api/*.ts`) con `apiFetch`, Bearer JWT, timeout 120s
+- [x] Historial de reservas del cliente en `src/lib/reservas-cliente.ts` (migra de `localStorage` a API real)
+- [x] QA visual con Chrome headless (escritorio 1440px + móvil 390px): todas las vistas consistentes
+- [x] Login real verificado contra `https://fabrica-2026-2-eap05-1.onrender.com` con usuario de prueba (`cliente.prueba.eap05@test.com` / `Prueba123`)
+- [x] Variable `NEXT_PUBLIC_API_URL` configurada en `.env.local` + `.env.example` (no hardcodeada)
 
-## Tecnologías
+## ✅ Pendiente
+- [ ] Despliegue final en Vercel con `NEXT_PUBLIC_API_URL` como Environment Variable (pública por diseño)
 
-- Framework: Next.js (App Router)
-- Lenguaje: TypeScript
-- Estilos: Tailwind CSS
-- Calidad de código: ESLint
-- Despliegue: Vercel
+## 📁 Estructura de archivos clave
 
----
+### API Clients (`src/api/`)
+- `auth.ts` - login, logout, registro, forgot-password, reset-password
+- `agenda.ts` - consultarAgenda (proveedor)
+- `horarios.ts` - registrarHorario, bloquearHorario
+- `eventos.ts` - **nuevo**: registrarEvento, definirCapacidadEvento, consultarOcupacionEvento, cancelarReservaEvento
+- `recursos.ts` - registrarRecurso, cambiarEstadoRecurso, definirDisponibilidad
+- `proveedor-servicio.ts` - asignarProveedor
+- `reservas.ts` - crearReserva, cancelarReserva, consultarHistorial (reemplaza localStorage)
+- `servicios.ts` - registrarServicio, modificarServicio, validarRecurso, **nuevo**: consultarUsoServicios
+- `sesion.ts` - getSesion, setSesion, clearSesion, normalizarRol
 
-## Estructura del Proyecto
+### Componentes UI (`components/ui/`)
+- Card, Button, Input, Select, Label, Alert, EmptyState, SkeletonTable
+- Badge, Skeleton, Spinner (no visible pero usado internamente)
+- Estilos consistentes con tokens semánticos (`bg-primary`, `text-ink-muted`, `border-line`, etc.)
 
-```text
-reservas-front-EAP05/
-├── app/                  # Rutas y páginas de la aplicación
-├── components/           # Componentes UI reutilizables
-├── lib/                  # Utilidades globales
-├── public/               # Archivos estáticos
-├── src/api/              # Integración REST con el Backend Spring Boot
-├── eslint.config.mjs     # Configuración de linter
-├── next-config.js        # Configuración de Next.js
-├── package.json          # Dependencias y scripts
-├── tailwind.config.ts    # Configuración de Tailwind CSS
-├── tsconfig.json         # Configuración de TypeScript
-└── vercel.json           # Configuración de despliegue en Vercel
+### Navegación (`components/app-shell.tsx`)
+- Sidebar desktop + topbar móvil
+- Navegación por rol: cliente → eventos, servicios > uso, historial; admin → eventos, servicios > uso
+- Filtros por rol con `sesion.rol`
+
+### UI/UX
+- Paleta de colores obligatoria: `#DDF3F0`, `#60714E`, `#89A666`, `#838E73`, `#72583D`
+- Estado visual consistente: hero, dashboard, formularios, tablas, modales, alerts
+- Accesibilidad: foco visible, contraste, tamaño de fuente legible, navegación con teclado
+
+## 📁 Estructura de carpetas
+
+```
+/app/
+  /(auth)/           - login, registro, recuperar-contrasena
+  /(app)/            - dashboard, agenda, horarios, servicios, reservas, eventos, historial, uso
+  /layout.tsx        - layout raíz
+  /layout.tsx        - layout para (auth) con sidebar + topbar
+  /page.tsx          - página principal (dashboard)
+  
+/components/
+  /ui/               - Card, Button, Input, Select, Badge, Alert, Feedback
+  /acceso-restringido/ - RequiereSesion, RolNoPermitido
+  
+/src/api/
+  auth.ts
+  agenda.ts
+  horarios.ts
+  eventos.ts           ← NUEVO
+  recursos.ts
+  proveedor-servicio.ts
+  reservas.ts        ← extendido (historial)
+  servicios.ts       ← extendido (uso)
+  config.ts          - apiFetch con Bearer JWT y timeout 120s
+  sesion.ts          - gestión de sesión y token
+  
+/lib/
+  reservas-cliente.ts   ← historial de reservas en localStorage (obsoleto)
+
+/app/
+  /(app)/            - rutas dinámicas: eventos, servicios, uso, historial
+  /(auth)/           - rutas de autenticación
+  
+/components/
+  /ui/               - componentes reutilizables
+  /acceso-restringido/ - componentes de control de acceso
+  
+/src/
+  api/               - clientes API contra contrato real
+  lib/               - utilidades generales
+  
+/app/
+  /layout.tsx        - layout raíz
+  /layout.tsx        - layout para (auth)
+  /page.tsx          - página principal (dashboard)
 ```
 
----
+## 🔄 Cambios clave realizados
 
-## Funcionalidades Principales
+### API Clients (nuevas funciones)
+- `src/api/eventos.ts`: registrarEvento, definirCapacidadEvento, consultarOcupacionEvento, cancelarReservaEvento
+- `src/api/reservas.ts`: consultarHistorial (reemplaza localStorage)
+- `src/api/servicios.ts`: consultarUsoServicios (nuevo endpoint)
 
-1. Autenticación y Registro: Control de acceso por roles (Cliente, Proveedor, Administrador).
-2. Servicios y Recursos: Creación y parametrización de servicios asociados a recursos e insumos.
-3. Disponibilidad: Gestión de franjas horarias y bloqueos administrativos.
-4. Reservas: Consulta e interacción en tiempo real con validación de disponibilidad y regla de cancelación con 12 horas de antelación.
-5. Reportes: Historiales de uso y métricas de ocupación.
+### Páginas nuevas (`app/(app)/`)
+- `/eventos` - Ocupación de eventos (admin)
+- `/eventos/registrar` - Crear evento (admin)
+- `/eventos/[id]/capacidad` - Definir capacidad (admin)
+- `/eventos/[id]/reservas` - Reservas de evento (admin/cliente)
+- `/servicios/uso` - Reporte de uso de servicios (admin)
+- `/historial` - Historial de reservas cliente (cliente)
 
----
+### Navegación (`app-shell.tsx`)
+- Añadidas entradas NAV para admin: `Eventos`, `Servicios > Uso`
+- Añadida entrada NAV para cliente: `Historial`
+- Filtro automático por rol en sidebar y topbar móvil
 
-## Configuración Local
+### PKM Vault (`/home/v3le7/Documents/Vaults/PKM/10-Proyectos/ReservasFrontend/`)
+- `ReservasFrontend_progress.md`: actualizado con 13 rutas, nuevos clientes API, historial migrado
+- `ReservasFrontend_decisions.md`: 4 decisiones nuevas (2026-11-21)
+- `MOC-ReservasFrontend.md`: páginas, API, decisiones clave actualizadas
+- `sessions/2026-11-21-opencode.md`: registro detallado de la sesión de build
 
-### Prerrequisitos
-- Node.js 18+
-- npm, yarn, pnpm o bun
+## ✅ Estado de la sesión de build
+- `npm run build` ✅ — 13 rutas compiladas (4 dinámicas: eventos/[id]/capacidad, eventos/[id]/reservas, eventos/registrar, servicios/uso)
+- TypeScript strict pasa
+- CORS backend probado: permite `*` (localhost, Vercel preview, producción)
+- Login real verificado: `cliente.prueba.eap05@test.com` / `Prueba123` → login → dashboard → historial
 
-### Pasos
+## 📌 Próximos pasos
+- Despliegue final en Vercel con `NEXT_PUBLIC_API_URL` configurado como Environment Variable (pública por diseño)
+- Cerrar sesión de PKM y hacer commit final
+- Publicar reporte de QA (screenshots, videos) en el vault
 
-1. Clonar el repositorio:
-   ```bash
-   git clone https://github.com/VeleZ-z/reservas-front-EAP05
-   cd reservas-front-EAP05
-   ```
-
-2. Instalar dependencias:
-   ```bash
-   npm install
-   ```
-
-3. Variables de entorno (`.env.local`):
-   ```env
-   NEXT_PUBLIC_API_URL=http://localhost:8080/api
-   ```
-
-4. Ejecutar servidor de desarrollo:
-   ```bash
-   npm run dev
-   ```
-
----
-
-## Scripts
-
-- `npm run dev`: Servidor de desarrollo.
-- `npm run build`: Compilación para producción.
-- `npm run start`: Inicia el servidor compilado.
-- `npm run lint`: Análisis estático con ESLint.
-
----
-
-## Repositorio Relacionado
-
-- Backend REST API (Spring Boot): [Camila-cabarcas/Fabrica-2026-2-EAP05](https://github.com/Camila-cabarcas/Fabrica-2026-2-EAP05)
-
----
-
-
+## 📣 Conclusión
+**¡Vamos!** El frontend está listo para el despliegue en Vercel. Todas las pantallas, API clients, navegación y consistencia visual están implementadas según los requisitos obligatorios. El proyecto sigue el patrón PARA (Plan, Act, Review, Act) y el estilo PKM documentado.

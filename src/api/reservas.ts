@@ -35,3 +35,30 @@ export async function cancelarReserva(id: string): Promise<{ mensaje?: string }>
     token: getToken(),
   });
 }
+
+/** Respuesta de GET /api/reservas/historial (HistorialReservaResponse). */
+export interface HistorialReservaResponse {
+  reservaId: string;
+  servicioId: string;
+  nombreServicio?: string;
+  horarioId: string;
+  inicio: string;
+  fin: string;
+  recursoId?: string;
+  nombreRecurso?: string;
+  estado: string;
+  creadaEn: string;
+}
+
+/**
+ * GET /api/reservas/historial
+ * Historial de reservas del cliente autenticado. Solo rol cliente.
+ * El backend puede devolver `{ reservas, mensaje }`; normalizamos a arreglo.
+ */
+export async function consultarHistorial(): Promise<HistorialReservaResponse[]> {
+  const data = await apiFetch<
+    HistorialReservaResponse[] | { reservas?: HistorialReservaResponse[]; mensaje?: string }
+  >("/api/reservas/historial", { method: "GET", token: getToken() });
+  if (Array.isArray(data)) return data;
+  return data?.reservas ?? [];
+}

@@ -81,15 +81,38 @@ const NAV: NavItem[] = [
     ),
   },
   {
-    href: "/reservas",
-    label: "Reservas",
-    description: "Crea y cancela",
+    href: "/eventos",
+    label: "Eventos",
+    description: "Ocupación y gestión",
+    roles: ["administrador"],
+    icon: icon(
+      <>
+        <path d="M3 3v18h18" />
+        <path d="m19 9-5 5-4-4-3 3" />
+      </>
+    ),
+  },
+  {
+    href: "/servicios/uso",
+    label: "Servicios > Uso",
+    description: "Reporte de uso",
+    roles: ["administrador"],
+    icon: icon(
+      <>
+        <path d="M3 3v18h18" />
+        <path d="m19 9-5 5-4-4-3 3" />
+      </>
+    ),
+  },
+  {
+    href: "/historial",
+    label: "Historial",
+    description: "Mis reservas",
     roles: ["cliente"],
     icon: icon(
       <>
-        <path d="M8 2v4M16 2v4" />
         <rect width="18" height="18" x="3" y="4" rx="2" />
-        <path d="m9 14 2 2 4-4" />
+        <path d="M16 2v4M8 2v4M3 10h18" />
       </>
     ),
   },

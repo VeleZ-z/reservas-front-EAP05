@@ -55,3 +55,27 @@ export async function validarRecurso(payload: {
     body: JSON.stringify(payload),
   });
 }
+
+/** Respuesta de GET /api/servicios/uso (UsoServicioResponse). */
+export interface UsoServicioResponse {
+  servicioId: string;
+  nombre: string;
+  reservas: number;
+}
+
+/**
+ * GET /api/servicios/uso?desde=…&hasta=…
+ * Cantidad de reservas por servicio en el periodo [desde, hasta). Solo administradores.
+ * El backend puede devolver `{ mensaje }` si no hay datos; lo normalizamos a arreglo vacío.
+ */
+export async function consultarUsoServicios(
+  desde: string,
+  hasta: string
+): Promise<UsoServicioResponse[]> {
+  const params = new URLSearchParams({ desde, hasta }).toString();
+  const data = await apiFetch<UsoServicioResponse[] | { mensaje?: string }>(
+    `/api/servicios/uso?${params}`,
+    { method: "GET", token: getToken() }
+  );
+  return Array.isArray(data) ? data : [];
+}
