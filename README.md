@@ -2,14 +2,6 @@
 
 Frontend en **Next.js 14 (App Router) + TypeScript + Tailwind CSS** para la API de reservas de servicios (Spring Boot desplegada en Render).
 
-## Estado
-
-- ✅ Build limpio: `npm run build` → **21 rutas** (3 dinámicas).
-- ✅ TypeScript en modo estricto sin errores (`npx tsc --noEmit`).
-- ✅ QA visual con Chrome headless en escritorio (1440 px) y móvil (390 px), con datos simulados por rol.
-- ✅ Login real verificado contra el backend desplegado.
-- ⏳ Pendiente: desplegar en Vercel y añadir el dominio del frontend a `APP_CORS_ALLOWED_ORIGINS` del backend.
-
 ## Requisitos
 
 - Node.js 18.17+ (probado con Node 24).
