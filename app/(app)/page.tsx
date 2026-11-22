@@ -324,7 +324,7 @@ function PanelSesion({ sesion }: { sesion: Sesion }) {
           <StatCard
             key={s.label}
             stat={s}
-            cargando={esProveedor && agenda === null}
+            cargando={esProveedor && cargando}
           />
         ))}
       </section>
