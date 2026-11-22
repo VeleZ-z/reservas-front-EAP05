@@ -70,6 +70,18 @@ const NAV: NavItem[] = [
     ),
   },
   {
+    href: "/historial-proveedor",
+    label: "Historial",
+    description: "Reservas de tus servicios",
+    roles: ["proveedor"],
+    icon: icon(
+      <>
+        <path d="M3 3v18h18" />
+        <path d="M18 17V9M13 17V5M8 17v-3" />
+      </>
+    ),
+  },
+  {
     href: "/servicios",
     label: "Servicios",
     description: "Catálogo y recursos",
@@ -94,9 +106,70 @@ const NAV: NavItem[] = [
   },
   {
     href: "/servicios/uso",
-    label: "Servicios > Uso",
-    description: "Reporte de uso",
+    label: "Uso de servicios",
+    description: "Reservas por servicio",
     roles: ["administrador"],
+    icon: icon(
+      <>
+        <path d="M3 3v18h18" />
+        <path d="M18 17V9M13 17V5M8 17v-3" />
+      </>
+    ),
+  },
+  {
+    href: "/servicios/ocupacion",
+    label: "Ocupación",
+    description: "Horarios reservados",
+    roles: ["administrador"],
+    icon: icon(
+      <>
+        <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+        <path d="M22 12A10 10 0 0 0 12 2v10z" />
+      </>
+    ),
+  },
+  {
+    href: "/historial-negocio",
+    label: "Historial del negocio",
+    description: "Servicios y eventos",
+    roles: ["administrador"],
+    icon: icon(
+      <>
+        <path d="M3 21h18M5 21V7l7-4 7 4v14" />
+        <path d="M9 21v-6h6v6" />
+      </>
+    ),
+  },
+  {
+    href: "/reservas",
+    label: "Reservas",
+    description: "Crea y cancela",
+    roles: ["cliente"],
+    icon: icon(
+      <>
+        <path d="M8 2v4M16 2v4" />
+        <rect width="18" height="18" x="3" y="4" rx="2" />
+        <path d="m9 14 2 2 4-4" />
+      </>
+    ),
+  },
+  {
+    href: "/servicios/disponibilidad",
+    label: "Disponibilidad",
+    description: "Horarios libres",
+    roles: ["cliente"],
+    icon: icon(
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 2" />
+      </>
+    ),
+  },
+  {
+    href: "/eventos/reservar",
+    label: "Eventos",
+    description: "Reserva tu cupo",
+    roles: ["cliente"],
     icon: icon(
       <>
         <path d="M3 3v18h18" />

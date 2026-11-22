@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert } from "@/components/ui/alert";
 import { SkeletonTable, EmptyState } from "@/components/ui/feedback";
 import { RequiereSesion, RolNoPermitido } from "@/components/acceso-restringido";
 import { consultarHistorial, type HistorialReservaResponse } from "@/src/api/reservas";
 import { getSesion, type Sesion } from "@/src/api/sesion";
+import { formatearFechaHora, formatearHora } from "@/src/lib/fechas";
 
 export default function HistorialPage() {
   const [sesion, setSesion] = useState<Sesion | null>(null);
@@ -94,9 +97,9 @@ export default function HistorialPage() {
               title="Sin reservas"
               description="Aún no has realizado ninguna reserva."
               action={
-                <a href="/reservas">
-                  <button className="btn btn-primary">Crear reserva</button>
-                </a>
+                <Link href="/reservas">
+                  <Button variant="primary">Crear reserva</Button>
+                </Link>
               }
             />
           ) : (
@@ -106,9 +109,13 @@ export default function HistorialPage() {
                   <tr>
                     <th scope="col">Servicio</th>
                     <th scope="col">Horario</th>
-                    <th scope="col">Recurso</th>
+                    <th scope="col" className="hidden md:table-cell">
+                      Recurso
+                    </th>
                     <th scope="col">Estado</th>
-                    <th scope="col">Creada</th>
+                    <th scope="col" className="hidden lg:table-cell">
+                      Creada
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -116,12 +123,9 @@ export default function HistorialPage() {
                     <tr key={r.reservaId}>
                       <td className="font-medium text-ink">{r.nombreServicio || r.servicioId.slice(0, 8)}</td>
                       <td className="text-caption text-ink-muted">
-                        {new Date(r.inicio).toLocaleString("es-CO", {
-                          dateStyle: "short",
-                          timeStyle: "short",
-                        })} – {new Date(r.fin).toLocaleTimeString("es-CO", { timeStyle: "short" })}
+                        {formatearFechaHora(r.inicio)} – {formatearHora(r.fin)}
                       </td>
-                      <td className="font-mono text-caption text-ink-muted">
+                      <td className="hidden font-mono text-caption text-ink-muted md:table-cell">
                         {r.nombreRecurso || (r.recursoId ? r.recursoId.slice(0, 8) : "—")}
                       </td>
                       <td>
@@ -129,11 +133,8 @@ export default function HistorialPage() {
                           {r.estado}
                         </Badge>
                       </td>
-                      <td className="text-caption text-ink-muted">
-                        {new Date(r.creadaEn).toLocaleString("es-CO", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
+                      <td className="hidden text-caption text-ink-muted lg:table-cell">
+                        {formatearFechaHora(r.creadaEn)}
                       </td>
                     </tr>
                   ))}

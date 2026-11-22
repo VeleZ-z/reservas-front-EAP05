@@ -79,3 +79,26 @@ export async function consultarUsoServicios(
   );
   return Array.isArray(data) ? data : [];
 }
+
+/** GET /api/servicios/{servicioId}/disponibilidad (HorarioDisponibleResponse). */
+export interface HorarioDisponibleResponse {
+  id: string;
+  inicio: string;
+  fin: string;
+  proveedorId: string;
+}
+
+/**
+ * GET /api/servicios/{servicioId}/disponibilidad
+ * Horarios futuros disponibles del servicio para el cliente autenticado.
+ * Puede devolver lista vacía si no hay horarios.
+ */
+export async function consultarDisponibilidadServicio(
+  servicioId: string
+): Promise<HorarioDisponibleResponse[]> {
+  const data = await apiFetch<HorarioDisponibleResponse[]>(
+    `/api/servicios/${servicioId}/disponibilidad`,
+    { method: "GET", token: getToken() }
+  );
+  return Array.isArray(data) ? data : [];
+}

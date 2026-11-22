@@ -17,7 +17,7 @@ import { registrarServicio } from "@/src/api/servicios";
 import { registrarRecurso } from "@/src/api/recursos";
 import { asignarProveedor } from "@/src/api/proveedor-servicio";
 import { getSesion, type Sesion } from "@/src/api/sesion";
-import { esUuid } from "@/src/lib/reservas-cliente";
+import { esUuid } from "@/src/lib/validaciones";
 
 type Tab = "servicio" | "recurso" | "asignacion";
 

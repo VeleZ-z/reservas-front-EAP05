@@ -1,133 +1,141 @@
-# ReservasFrontend - Sistema de Reservas de Servicios
+# Reserva.io — Frontend del Sistema de Reservas
 
-## Estado actual (2026-11-21)
+Frontend en **Next.js 14 (App Router) + TypeScript + Tailwind CSS** para la API de reservas de servicios (Spring Boot desplegada en Render).
 
-✅ **Completado**
-- [x] Build limpio con Next.js 14.2.35 + Tailwind v3.4.17 + postcss.config.js
-- [x] 13 rutas estáticas y dinámicas (incluyendo `/eventos`, `/eventos/[id]/capacidad`, `/eventos/[id]/reservas`, `/servicios/uso`, `/historial`)
-- [x] Sistema de tokens de 3 tiers (global → alias semántico → componente) en `app/globals.css` + `tailwind.config.ts`
-- [x] Componentes UI reutilizables en `components/ui/` (Card, Button, Input, Select, Badge, Alert, Feedback)
-- [x] `app-shell.tsx` con sidebar desktop + topbar móvil, navegación por rol, perfil, cierre de sesión y footer
-- [x] API client contra contrato real de Render (`src/api/*.ts`) con `apiFetch`, Bearer JWT, timeout 120s
-- [x] Historial de reservas del cliente en `src/lib/reservas-cliente.ts` (migra de `localStorage` a API real)
-- [x] QA visual con Chrome headless (escritorio 1440px + móvil 390px): todas las vistas consistentes
-- [x] Login real verificado contra `https://fabrica-2026-2-eap05-1.onrender.com` con usuario de prueba (`cliente.prueba.eap05@test.com` / `Prueba123`)
-- [x] Variable `NEXT_PUBLIC_API_URL` configurada en `.env.local` + `.env.example` (no hardcodeada)
+## Estado
 
-## ✅ Pendiente
-- [ ] Despliegue final en Vercel con `NEXT_PUBLIC_API_URL` como Environment Variable (pública por diseño)
+- ✅ Build limpio: `npm run build` → **21 rutas** (3 dinámicas).
+- ✅ TypeScript en modo estricto sin errores (`npx tsc --noEmit`).
+- ✅ QA visual con Chrome headless en escritorio (1440 px) y móvil (390 px), con datos simulados por rol.
+- ✅ Login real verificado contra el backend desplegado.
+- ⏳ Pendiente: desplegar en Vercel y añadir el dominio del frontend a `APP_CORS_ALLOWED_ORIGINS` del backend.
 
-## 📁 Estructura de archivos clave
+## Requisitos
 
-### API Clients (`src/api/`)
-- `auth.ts` - login, logout, registro, forgot-password, reset-password
-- `agenda.ts` - consultarAgenda (proveedor)
-- `horarios.ts` - registrarHorario, bloquearHorario
-- `eventos.ts` - **nuevo**: registrarEvento, definirCapacidadEvento, consultarOcupacionEvento, cancelarReservaEvento
-- `recursos.ts` - registrarRecurso, cambiarEstadoRecurso, definirDisponibilidad
-- `proveedor-servicio.ts` - asignarProveedor
-- `reservas.ts` - crearReserva, cancelarReserva, consultarHistorial (reemplaza localStorage)
-- `servicios.ts` - registrarServicio, modificarServicio, validarRecurso, **nuevo**: consultarUsoServicios
-- `sesion.ts` - getSesion, setSesion, clearSesion, normalizarRol
+- Node.js 18.17+ (probado con Node 24).
+- Backend accesible (por defecto `https://fabrica-2026-2-eap05-1.onrender.com`).
 
-### Componentes UI (`components/ui/`)
-- Card, Button, Input, Select, Label, Alert, EmptyState, SkeletonTable
-- Badge, Skeleton, Spinner (no visible pero usado internamente)
-- Estilos consistentes con tokens semánticos (`bg-primary`, `text-ink-muted`, `border-line`, etc.)
+## Configuración
 
-### Navegación (`components/app-shell.tsx`)
-- Sidebar desktop + topbar móvil
-- Navegación por rol: cliente → eventos, servicios > uso, historial; admin → eventos, servicios > uso
-- Filtros por rol con `sesion.rol`
-
-### UI/UX
-- Paleta de colores obligatoria: `#DDF3F0`, `#60714E`, `#89A666`, `#838E73`, `#72583D`
-- Estado visual consistente: hero, dashboard, formularios, tablas, modales, alerts
-- Accesibilidad: foco visible, contraste, tamaño de fuente legible, navegación con teclado
-
-## 📁 Estructura de carpetas
-
-```
-/app/
-  /(auth)/           - login, registro, recuperar-contrasena
-  /(app)/            - dashboard, agenda, horarios, servicios, reservas, eventos, historial, uso
-  /layout.tsx        - layout raíz
-  /layout.tsx        - layout para (auth) con sidebar + topbar
-  /page.tsx          - página principal (dashboard)
-  
-/components/
-  /ui/               - Card, Button, Input, Select, Badge, Alert, Feedback
-  /acceso-restringido/ - RequiereSesion, RolNoPermitido
-  
-/src/api/
-  auth.ts
-  agenda.ts
-  horarios.ts
-  eventos.ts           ← NUEVO
-  recursos.ts
-  proveedor-servicio.ts
-  reservas.ts        ← extendido (historial)
-  servicios.ts       ← extendido (uso)
-  config.ts          - apiFetch con Bearer JWT y timeout 120s
-  sesion.ts          - gestión de sesión y token
-  
-/lib/
-  reservas-cliente.ts   ← historial de reservas en localStorage (obsoleto)
-
-/app/
-  /(app)/            - rutas dinámicas: eventos, servicios, uso, historial
-  /(auth)/           - rutas de autenticación
-  
-/components/
-  /ui/               - componentes reutilizables
-  /acceso-restringido/ - componentes de control de acceso
-  
-/src/
-  api/               - clientes API contra contrato real
-  lib/               - utilidades generales
-  
-/app/
-  /layout.tsx        - layout raíz
-  /layout.tsx        - layout para (auth)
-  /page.tsx          - página principal (dashboard)
+```bash
+cp .env.example .env.local
+npm install
+npm run dev
 ```
 
-## 🔄 Cambios clave realizados
+`.env.local`:
 
-### API Clients (nuevas funciones)
-- `src/api/eventos.ts`: registrarEvento, definirCapacidadEvento, consultarOcupacionEvento, cancelarReservaEvento
-- `src/api/reservas.ts`: consultarHistorial (reemplaza localStorage)
-- `src/api/servicios.ts`: consultarUsoServicios (nuevo endpoint)
+```env
+NEXT_PUBLIC_API_URL=https://fabrica-2026-2-eap05-1.onrender.com
+```
 
-### Páginas nuevas (`app/(app)/`)
-- `/eventos` - Ocupación de eventos (admin)
-- `/eventos/registrar` - Crear evento (admin)
-- `/eventos/[id]/capacidad` - Definir capacidad (admin)
-- `/eventos/[id]/reservas` - Reservas de evento (admin/cliente)
-- `/servicios/uso` - Reporte de uso de servicios (admin)
-- `/historial` - Historial de reservas cliente (cliente)
+`NEXT_PUBLIC_API_URL` se configura en Vercel como **Environment Variable pública** (no como Secret): Next.js la inyecta en el bundle porque el navegador llama directamente a la API.
 
-### Navegación (`app-shell.tsx`)
-- Añadidas entradas NAV para admin: `Eventos`, `Servicios > Uso`
-- Añadida entrada NAV para cliente: `Historial`
-- Filtro automático por rol en sidebar y topbar móvil
+> **CORS:** el backend solo autoriza los orígenes de `APP_CORS_ALLOWED_ORIGINS`. Para que el frontend funcione en Vercel hay que añadir el dominio del despliegue (por ejemplo `https://reservas-front-eap05.vercel.app`) a esa variable en Render.
 
-### PKM Vault (`/home/v3le7/Documents/Vaults/PKM/10-Proyectos/ReservasFrontend/`)
-- `ReservasFrontend_progress.md`: actualizado con 13 rutas, nuevos clientes API, historial migrado
-- `ReservasFrontend_decisions.md`: 4 decisiones nuevas (2026-11-21)
-- `MOC-ReservasFrontend.md`: páginas, API, decisiones clave actualizadas
-- `sessions/2026-11-21-opencode.md`: registro detallado de la sesión de build
+## Scripts
 
-## ✅ Estado de la sesión de build
-- `npm run build` ✅ — 13 rutas compiladas (4 dinámicas: eventos/[id]/capacidad, eventos/[id]/reservas, eventos/registrar, servicios/uso)
-- TypeScript strict pasa
-- CORS backend probado: permite `*` (localhost, Vercel preview, producción)
-- Login real verificado: `cliente.prueba.eap05@test.com` / `Prueba123` → login → dashboard → historial
+| Comando | Descripción |
+| --- | --- |
+| `npm run dev` | Servidor de desarrollo |
+| `npm run build` | Build de producción |
+| `npm start` | Sirve el build |
+| `npm run lint` | ESLint (`next lint`) |
 
-## 📌 Próximos pasos
-- Despliegue final en Vercel con `NEXT_PUBLIC_API_URL` configurado como Environment Variable (pública por diseño)
-- Cerrar sesión de PKM y hacer commit final
-- Publicar reporte de QA (screenshots, videos) en el vault
+## Rutas
 
-## 📣 Conclusión
-**¡Vamos!** El frontend está listo para el despliegue en Vercel. Todas las pantallas, API clients, navegación y consistencia visual están implementadas según los requisitos obligatorios. El proyecto sigue el patrón PARA (Plan, Act, Review, Act) y el estilo PKM documentado.
+### Públicas (`(auth)`)
+
+- `/login`, `/registro`, `/recuperar-contrasena`
+
+### Aplicación (`(app)`)
+
+| Ruta | Rol | Descripción |
+| --- | --- | --- |
+| `/` | Todos | Panel con accesos según el rol |
+| `/agenda` | Proveedor | Reservas recibidas |
+| `/horarios` | Proveedor | Registrar y bloquear horarios |
+| `/historial-proveedor` | Proveedor | Reservas de sus servicios, con datos del cliente |
+| `/servicios` | Administrador | Alta de servicios, recursos y asignación de proveedores |
+| `/eventos` | Administrador | Ocupación de eventos por periodo + acciones |
+| `/eventos/registrar` | Administrador | Crear evento |
+| `/eventos/[id]/actualizar` | Administrador | Editar nombre, descripción y fechas |
+| `/eventos/[id]/capacidad` | Administrador | Cambiar capacidad máxima |
+| `/servicios/uso` | Administrador | Reservas por servicio en un periodo |
+| `/servicios/ocupacion` | Administrador | % de horarios reservados por servicio |
+| `/historial-negocio` | Administrador | Reservas de servicios y eventos en una vista |
+| `/reservas` | Cliente | Crear y cancelar reservas |
+| `/servicios/disponibilidad` | Cliente | Horarios libres de un servicio y reserva en un clic |
+| `/eventos/reservar` | Cliente | Reservar cupo de un evento o cancelar una reserva |
+| `/historial` | Cliente | Historial real de reservas (`GET /api/reservas/historial`) |
+
+Cada página valida la sesión y el rol con `RequiereSesion` / `RolNoPermitido`; la navegación lateral y la topbar móvil filtran las entradas por rol.
+
+## Estructura
+
+```
+app/
+  (auth)/                 # login, registro, recuperación
+  (app)/                  # panel, agenda, horarios, servicios, eventos, historial…
+  globals.css             # tokens de diseño (3 tiers)
+  layout.tsx              # layout raíz
+components/
+  ui/                     # Card, Button, Input, Select, Badge, Alert, Feedback
+  app-shell.tsx           # sidebar + topbar + navegación por rol
+  acceso-restringido.tsx  # RequiereSesion / RolNoPermitido
+  page-header.tsx
+src/
+  api/                    # clientes tipados contra el contrato real
+    auth.ts  agenda.ts  horarios.ts  eventos.ts  recursos.ts
+    proveedor-servicio.ts  reservas.ts  servicios.ts  sesion.ts  config.ts
+  lib/
+    fechas.ts             # conversión datetime-local ↔ ISO-8601
+    reservas-cliente.ts   # utilidades locales (UUID, reservas en curso)
+```
+
+## Clientes de API
+
+Todos usan `apiFetch` (`src/api/config.ts`), que:
+
+- antepone `NEXT_PUBLIC_API_URL`;
+- envía `Authorization: Bearer <token>` cuando hay sesión;
+- aplica un timeout de **120 s** (cold start de Render);
+- traduce errores del backend (`mensaje`, `error`, `message`, `detail`);
+- cierra la sesión automáticamente ante un **401**.
+
+Endpoints cubiertos: agenda, autenticación (login/logout/registro/recuperación), horarios, recursos, proveedor-servicio, reservas (crear, cancelar, historial de cliente/proveedor/negocio, ocupación de servicios), servicios (registro, modificación, uso, disponibilidad) y eventos (registro, actualización, capacidad, ocupación, reservar y cancelar cupo).
+
+## Diseño
+
+- **Paleta obligatoria:** `#DDF3F0`, `#60714E`, `#89A666`, `#838E73`, `#72583D`.
+- **Tokens en 3 capas:** global → alias semántico (`bg-primary`, `text-ink-muted`, `border-line`…) → componente, definidos en `app/globals.css` y `tailwind.config.ts`.
+- Componentes con estados de foco visibles, contraste AA y navegación por teclado.
+- Tablas con desplazamiento horizontal y columnas secundarias ocultas en móvil.
+- Reportes con rango por defecto (últimos 30/60 días) y auto-carga al entrar.
+
+## Despliegue en Vercel
+
+1. Importar el repositorio en Vercel (framework: Next.js; no requiere configuración extra).
+2. Añadir la variable de entorno:
+   - **Name:** `NEXT_PUBLIC_API_URL`
+   - **Value:** `https://fabrica-2026-2-eap05-1.onrender.com`
+   - Entornos: Production, Preview y Development.
+3. Desplegar. Con CLI:
+
+```bash
+npx vercel login
+npx vercel --prod
+```
+
+4. Copiar el dominio de producción y añadirlo a `APP_CORS_ALLOWED_ORIGINS` en Render.
+
+> El plan gratuito de Render suspende la instancia por inactividad; el primer request puede tardar ~77 s. El cliente HTTP espera hasta 120 s y muestra un mensaje accionable si se agota.
+
+## Verificación
+
+```bash
+npm run build
+npx tsc --noEmit
+```
+
+QA visual: capturas de todas las vistas por rol en escritorio y móvil, con la API simulada mediante Chrome DevTools Protocol, más una comprobación real de `login → /historial` contra Render.
